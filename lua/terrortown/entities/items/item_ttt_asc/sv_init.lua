@@ -1,6 +1,7 @@
 if not SERVER then return end
 
 util.AddNetworkString("ttt_asc_chance_change")
+util.AddNetworkString("ttt_asc_key_respawn")
 
 function A_SECOND_CHANCE:ChanceChanged(ply)
   if not IsValid(ply) or not A_SECOND_CHANCE.CVARS.show_mstack_message then return end
@@ -23,7 +24,7 @@ function A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
     return
   end
 
-  -- HANDLE REVIVE
+  A_SECOND_CHANCE:HandleRespawn(ply, A_SECOND_CHANCE.CVARS.max_revive_time, true)
 
 end
 
@@ -42,15 +43,26 @@ function A_SECOND_CHANCE:HandleDeathAttacker(ply, attacker)
   attacker:TTT2NETSetUInt("ttt_asc_chance", new_chance, 8)
 
   A_SECOND_CHANCE:ChanceChanged(attacker)
-
 end
 
-function A_SECOND_CHANCE:HandleRespawn(ply)
-  ply:Revive(A_SECOND_CHANCE.CVARS.max_revive_time, function(),
+function A_SECOND_CHANCE:HandleRespawn(ply, delay, needCorpse)
+  local spawnEntity
+  local spawnPos
+  local spawnEyeAngle
+  if not needCorpse then
+    spawnEntity = spawn.GetRandomPlayerSpawnEntity(self)
+
+    spawnPos = spawnEntity:GetPos()
+    spawnEyeAngle = spawnEntity:EyeAngles()
+  end
+
+  ply:Revive(delay, function(),
     function(),
+    needCorpse,
     true,
-    true,
-    function()
+    function(),
+    spawnPos,
+    spawnEyeAngle
     )
   ply:SendRevivalReason("Use 'R' to respawn at your Corpse. Use 'Space' to respawn at a random spawn point.")
 end
@@ -64,3 +76,13 @@ hook.Add("DoPlayerDeath", "TTT_ASC_HANDLE_DEATH", function(ply, attacker)
   A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
   A_SECOND_CHANCE:HandleDeathAttacker(ply, attacker)
 end)
+
+
+net.Receive("ttt_asc_key_respawn", function(len, ply)
+  if not IsValid(ply) or ply:IsTerror() then return end
+  local needCorpse = net.ReadBool()
+
+  A_SECOND_CHANCE:CancelRevival(ply)
+  A_SECOND_CHANCE:HandleRespawn(ply, 0, needCorpse)
+
+)
