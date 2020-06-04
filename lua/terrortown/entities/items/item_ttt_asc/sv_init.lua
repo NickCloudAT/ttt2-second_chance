@@ -2,6 +2,7 @@ if not SERVER then return end
 
 util.AddNetworkString("ttt_asc_chance_change")
 util.AddNetworkString("ttt_asc_key_respawn")
+util.AddNetworkString("ttt_asc_show_reason")
 
 function A_SECOND_CHANCE:ChanceChanged(ply)
   if not IsValid(ply) or not A_SECOND_CHANCE.CVARS.show_mstack_message then return end
@@ -29,7 +30,8 @@ function A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
 
   timer.Simple(A_SECOND_CHANCE.CVARS.min_revive_time, function()
     if not IsValid(ply) then return end
-    ply:SendRevivalReason("Use 'R' to respawn at your Corpse. Use 'Space' to respawn at a random spawn point.")
+    net.Start("ttt_asc_show_reason")
+    net.Send(ply)
     ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", true)
   end)
 end

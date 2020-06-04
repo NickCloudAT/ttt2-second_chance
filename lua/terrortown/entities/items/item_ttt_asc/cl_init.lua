@@ -5,6 +5,10 @@ net.Receive("ttt_asc_chance_change", function()
   chat.PlaySound()
 end)
 
+net.Receive("ttt_asc_show_reason", function()
+  LocalPlayer():SetRevivalReason("ttt_asc_revive_keys", {keycorpse = string.upper(input.GetKeyName(bind.Find("ttt_asc_respawn_corpse"))), keyspawn = string.upper(input.GetKeyName(bind.Find("ttt_asc_respawn_spawn")))})
+end)
+
 bind.Register("ttt_asc_respawn_corpse", function()
   if not LocalPlayer():TTT2NETGetBool("ttt_asc_respawning_allowkey", false) then return end
   net.Start("ttt_asc_key_respawn")
