@@ -26,5 +26,5 @@ bind.Register("ttt_asc_respawn_spawn", function()
   net.SendToServer()
 end)
 
-bind.AddSettingsBinding("ttt_asc_respawn_corpse", "ASC - Respawn at corpse", "Items")
-bind.AddSettingsBinding("ttt_asc_respawn_spawn", "ASC - Respawn at spawn", "Items")
+bind.AddSettingsBinding("ttt_asc_respawn_corpse", "ASC - Respawn at corpse", "Items", KEY_R)
+bind.AddSettingsBinding("ttt_asc_respawn_spawn", "ASC - Respawn at spawn", "Items", KEY_SPACE)
