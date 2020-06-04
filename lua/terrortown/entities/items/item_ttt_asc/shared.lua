@@ -1,8 +1,8 @@
 if SERVER then
   AddCSLuaFile()
 
-  resource.AddFile("vgui/ttt/icon_asc.vmt")
-  resource.AddFile("vgui/ttt/perks/hud_asc_ttt2.png")
+  resource.AddFile("materials/vgui/ttt/icon_asc.vmt")
+  resource.AddFile("materials/vgui/ttt/perks/hud_asc_ttt2.png")
 end
 
 ITEM.hud = Material("vgui/ttt/perks/hud_asc_ttt2.png")
@@ -31,7 +31,7 @@ if SERVER then
 else
 
   function ITEM:DrawInfo()
-    return LocalPlayer():TTT2NETGetUInt("ttt_asc_chance", 0)
+    return LocalPlayer():TTT2NETGetUInt("ttt_asc_chance", 0) .. "%"
   end
 
 end

@@ -19,17 +19,23 @@ end
 function A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
   if not IsValid(ply) or not ply:HasEquipmentItem("item_ttt_asc") then return end
 
-  if not A_SECOND_CHANCE:ShouldRevive(ply)
-    LANG.Msg(ply, "ttt_asc_no_revive", "No Revive")
+  if not A_SECOND_CHANCE:ShouldRevive(ply) then
+    LANG.Msg(ply, "ttt_asc_no_revive", nil, MSG_MSTACK_PLAIN)
     return
   end
 
-  A_SECOND_CHANCE:HandleRespawn(ply, A_SECOND_CHANCE.CVARS.max_revive_time, true)
+  EPOP:AddMessage({ply}, "ttt_asc_popup_title", "ttt_asc_popup_subtitle", 5, false)
+  A_SECOND_CHANCE:HandleRespawn(ply, A_SECOND_CHANCE.CVARS.max_revive_time, A_SECOND_CHANCE.CVARS.need_corpse, true)
 
+  timer.Simple(A_SECOND_CHANCE.CVARS.min_revive_time, function()
+    if not IsValid(ply) then return end
+    ply:SendRevivalReason("Use 'R' to respawn at your Corpse. Use 'Space' to respawn at a random spawn point.")
+    ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", true)
+  end)
 end
 
 function A_SECOND_CHANCE:HandleDeathAttacker(ply, attacker)
-  if not IsValid(attacker) or not attacker:IsPlayer() or not attacker:HasEquipmentItem("item_ttt_asc") then return end
+  if not IsValid(attacker) or not attacker:IsPlayer() or ply == attacker or not attacker:HasEquipmentItem("item_ttt_asc") then return end
 
   local cur_chance = attacker:TTT2NETGetUInt("ttt_asc_chance", 0)
   local new_chance
@@ -45,30 +51,33 @@ function A_SECOND_CHANCE:HandleDeathAttacker(ply, attacker)
   A_SECOND_CHANCE:ChanceChanged(attacker)
 end
 
-function A_SECOND_CHANCE:HandleRespawn(ply, delay, needCorpse)
-  local spawnEntity
-  local spawnPos
-  local spawnEyeAngle
-  if not needCorpse then
+function A_SECOND_CHANCE:HandleRespawn(ply, delay, needCorpse, respawnAtCorpse)
+  local spawnEntity = nil
+  local spawnPos = nil
+  local spawnEyeAngle = nil
+  if not respawnAtCorpse then
     spawnEntity = spawn.GetRandomPlayerSpawnEntity(self)
 
     spawnPos = spawnEntity:GetPos()
     spawnEyeAngle = spawnEntity:EyeAngles()
   end
 
-  ply:Revive(delay, function(),
-    function(),
+  ply:Revive(delay,
+    function(ply) ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", false) end,
+    function(ply)
+      return IsValid(ply) and not ply:Alive()
+    end,
     needCorpse,
     true,
-    function(),
+    function(ply, failMessage) ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", false) LANG.Msg(ply, failMessage, nil, MSG_MSTACK_WARN) end,
     spawnPos,
     spawnEyeAngle
     )
-  ply:SendRevivalReason("Use 'R' to respawn at your Corpse. Use 'Space' to respawn at a random spawn point.")
 end
 
 function A_SECOND_CHANCE:CancelRevivalProcess(ply)
   ply:CancelRevival(nil, true)
+  ply:SendRevivalReason(nil)
 end
 
 
@@ -80,9 +89,9 @@ end)
 
 net.Receive("ttt_asc_key_respawn", function(len, ply)
   if not IsValid(ply) or ply:IsTerror() then return end
-  local needCorpse = net.ReadBool()
+  local respawnAtCorpse = net.ReadBool()
 
-  A_SECOND_CHANCE:CancelRevival(ply)
-  A_SECOND_CHANCE:HandleRespawn(ply, 0, needCorpse)
+  A_SECOND_CHANCE:CancelRevivalProcess(ply)
+  A_SECOND_CHANCE:HandleRespawn(ply, 0, A_SECOND_CHANCE.CVARS.need_corpse, respawnAtCorpse)
 
-)
+end)
