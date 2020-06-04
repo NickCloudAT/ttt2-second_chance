@@ -6,7 +6,10 @@ net.Receive("ttt_asc_chance_change", function()
 end)
 
 net.Receive("ttt_asc_show_reason", function()
-  LocalPlayer():SetRevivalReason("ttt_asc_revive_keys", {keycorpse = string.upper(input.GetKeyName(bind.Find("ttt_asc_respawn_corpse"))), keyspawn = string.upper(input.GetKeyName(bind.Find("ttt_asc_respawn_spawn")))})
+  local corpseKey = bind.Find("ttt_asc_respawn_corpse") == KEY_NONE and "NONE" or string.upper(input.GetKeyName(bind.Find("ttt_asc_respawn_corpse")))
+  local spawnKey = bind.Find("ttt_asc_respawn_spawn") == KEY_NONE and "NONE"or string.upper(input.GetKeyName(bind.Find("ttt_asc_respawn_spawn")))
+
+  LocalPlayer():SetRevivalReason("ttt_asc_revive_keys", {keycorpse = corpseKey, keyspawn = spawnKey})
 end)
 
 bind.Register("ttt_asc_respawn_corpse", function()
