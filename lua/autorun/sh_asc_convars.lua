@@ -10,8 +10,8 @@ local max_kill_pct = CreateConVar("ttt_asc_kill_pct_max", "25", {FCVAR_NOTIFY, F
 local min_kill_pct = CreateConVar("ttt_asc_kill_pct_min", "15", {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 local show_mstack_message = CreateConVar("ttt_asc_mstack_chat_message", "1", {FCVAR_NOTIFY, FCVAR_ARCHIVE, FCVAR_REPLICATED})
 
-A_SECOND_CHANCE.CVARS.max_revive_time = max_revive_time:GetInt()
-A_SECOND_CHANCE.CVARS.min_revive_time = min_revive_time:GetInt()
+A_SECOND_CHANCE.CVARS.max_revive_time = max_revive_time:GetFloat()
+A_SECOND_CHANCE.CVARS.min_revive_time = min_revive_time:GetFloat()
 A_SECOND_CHANCE.CVARS.need_corpse = need_corpse:GetBool()
 A_SECOND_CHANCE.CVARS.max_start_pct = max_start_pct:GetInt()
 A_SECOND_CHANCE.CVARS.min_start_pct = min_start_pct:GetInt()
@@ -21,11 +21,11 @@ A_SECOND_CHANCE.CVARS.show_mstack_message = show_mstack_message:GetBool()
 
 if SERVER then
   cvars.AddChangeCallback("ttt_asc_max_revive_time", function(name, old, new)
-    A_SECOND_CHANCE.CVARS.max_revive_time = tonumber(new)
+    A_SECOND_CHANCE.CVARS.max_revive_time = util.StringToType(new, "float")
   end, nil)
 
   cvars.AddChangeCallback("ttt_asc_min_revive_time", function(name, old, new)
-    A_SECOND_CHANCE.CVARS.min_revive_time = tonumber(new)
+    A_SECOND_CHANCE.CVARS.min_revive_time = util.StringToType(new, "float")
   end, nil)
 
   cvars.AddChangeCallback("ttt_asc_need_corpse", function(name, old, new)
@@ -53,8 +53,8 @@ if SERVER then
   end, nil)
 
   hook.Add("TTTUlxInitCustomCVar", "TTTASCInitCvars", function(name)
-    ULib.replicatedWritableCvar("ttt_asc_max_revive_time", "rep_ttt_asc_max_revive_time", GetConVar("ttt_asc_max_revive_time"):GetInt(), true, false, name)
-    ULib.replicatedWritableCvar("ttt_asc_min_revive_time", "rep_ttt_asc_min_revive_time", GetConVar("ttt_asc_min_revive_time"):GetInt(), true, false, name)
+    ULib.replicatedWritableCvar("ttt_asc_max_revive_time", "rep_ttt_asc_max_revive_time", GetConVar("ttt_asc_max_revive_time"):GetFloat(), true, false, name)
+    ULib.replicatedWritableCvar("ttt_asc_min_revive_time", "rep_ttt_asc_min_revive_time", GetConVar("ttt_asc_min_revive_time"):GetFloat(), true, false, name)
     ULib.replicatedWritableCvar("ttt_asc_need_corpse", "rep_ttt_asc_need_corpse", GetConVar("ttt_asc_need_corpse"):GetInt(), true, false, name)
     ULib.replicatedWritableCvar("ttt_asc_start_pct_max", "rep_ttt_asc_start_pct_max", GetConVar("ttt_asc_start_pct_max"):GetInt(), true, false, name)
     ULib.replicatedWritableCvar("ttt_asc_start_pct_min", "rep_ttt_asc_start_pct_min", GetConVar("ttt_asc_start_pct_min"):GetInt(), true, false, name)
@@ -81,10 +81,10 @@ if CLIENT then
       tttrslst:SetSpacing(5)
       tttrslst:EnableVerticalScrollbar()
 
-      local slider1 = xlib.makeslider{label = 'ttt_asc_max_revive_time (Def. 10)', repconvar = 'rep_ttt_asc_max_revive_time', min = 0, max = 10000, decimal = 0, parent = tttrslst}
+      local slider1 = xlib.makeslider{label = 'ttt_asc_max_revive_time (Def. 10)', repconvar = 'rep_ttt_asc_max_revive_time', min = 0, max = 100, decimal = 1, parent = tttrslst}
   		tttrslst:AddItem(slider1)
 
-  		local slider2 = xlib.makeslider{label = 'ttt_asc_min_revive_time (Def. 2)', repconvar = 'rep_ttt_asc_min_revive_time', min = 0, max = 10000, decimal = 0, parent = tttrslst}
+  		local slider2 = xlib.makeslider{label = 'ttt_asc_min_revive_time (Def. 2)', repconvar = 'rep_ttt_asc_min_revive_time', min = 0, max = 100, decimal = 1, parent = tttrslst}
   		tttrslst:AddItem(slider2)
 
       local slider3 = xlib.makeslider{label = 'ttt_asc_start_pct_max (Def. 25)', repconvar = 'rep_ttt_asc_start_pct_max', min = 1, max = 100, decimal = 0, parent = tttrslst}
