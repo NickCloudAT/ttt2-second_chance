@@ -63,11 +63,11 @@ if SERVER then
   end, nil)
 
   cvars.AddChangeCallback("ttt_asc_mstack_chat_message", function(name, old, new)
-    A_SECOND_CHANCE.CVARS.show_mstack_message = tonumber(new)
+    A_SECOND_CHANCE.CVARS.show_mstack_message = util.StringToType(new, "bool")
   end, nil)
 
   cvars.AddChangeCallback("ttt_asc_allow_key_respawn", function(name, old, new)
-    A_SECOND_CHANCE.CVARS.allow_key_respawn = tonumber(new)
+    A_SECOND_CHANCE.CVARS.allow_key_respawn = util.StringToType(new, "bool")
   end, nil)
 
   hook.Add("TTTUlxInitCustomCVar", "TTTASCInitCvars", function(name)
