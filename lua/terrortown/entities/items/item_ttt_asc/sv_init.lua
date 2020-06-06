@@ -28,6 +28,7 @@ function A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
   EPOP:AddMessage({ply}, "ttt_asc_popup_title", "ttt_asc_popup_subtitle", 5, false)
   A_SECOND_CHANCE:HandleRespawn(ply, A_SECOND_CHANCE.CVARS.max_revive_time, A_SECOND_CHANCE.CVARS.need_corpse, true)
 
+  if not A_SECOND_CHANCE.CVARS.allow_key_respawn then return end
   timer.Simple(A_SECOND_CHANCE.CVARS.min_revive_time, function()
     if not IsValid(ply) then return end
     net.Start("ttt_asc_show_reason")
@@ -43,9 +44,9 @@ function A_SECOND_CHANCE:HandleDeathAttacker(ply, attacker)
   local new_chance
 
   if attacker:IsInTeam(ply) then
-    new_chance = math.max(1, cur_chance-math.random(A_SECOND_CHANCE.CVARS.min_kill_pct, A_SECOND_CHANCE.CVARS.max_kill_pct))
+    new_chance = math.max(1, cur_chance-math.random(A_SECOND_CHANCE.CVARS.min_lose_pct, A_SECOND_CHANCE.CVARS.max_lose_pct))
   else
-    new_chance = math.min(99, cur_chance+math.random(A_SECOND_CHANCE.CVARS.min_kill_pct, A_SECOND_CHANCE.CVARS.max_kill_pct))
+    new_chance = math.min(99, cur_chance+math.random(A_SECOND_CHANCE.CVARS.min_gain_pct, A_SECOND_CHANCE.CVARS.max_gain_pct))
   end
 
   attacker:TTT2NETSetUInt("ttt_asc_chance", new_chance, 8)
