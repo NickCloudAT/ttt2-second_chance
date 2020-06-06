@@ -83,6 +83,10 @@ function A_SECOND_CHANCE:CancelRevivalProcess(ply)
   ply:SendRevivalReason(nil)
 end
 
+function A_SECOND_CHANCE:ResetPlayer(ply)
+  ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", false)
+end
+
 
 hook.Add("DoPlayerDeath", "TTT_ASC_HANDLE_DEATH", function(ply, attacker)
   A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
@@ -97,4 +101,16 @@ net.Receive("ttt_asc_key_respawn", function(len, ply)
   A_SECOND_CHANCE:CancelRevivalProcess(ply)
   A_SECOND_CHANCE:HandleRespawn(ply, 0, A_SECOND_CHANCE.CVARS.need_corpse, respawnAtCorpse)
 
+end)
+
+hook.Add("TTTPrepareRound", "TTT_ASC_RESET_PREP", function()
+  for k,v in ipairs(player.GetAll()) do
+    A_SECOND_CHANCE:ResetPlayer(v)
+  end
+end)
+
+hook.Add("TTTBeginRound", "TTT_ASC_RESET_BEGIN", function()
+  for k,v in ipairs(player.GetAll()) do
+    A_SECOND_CHANCE:ResetPlayer(v)
+  end
 end)
