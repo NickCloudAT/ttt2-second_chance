@@ -26,9 +26,11 @@ function A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
   end
 
   EPOP:AddMessage({ply}, "ttt_asc_popup_title", "ttt_asc_popup_subtitle", 5, false)
+
   A_SECOND_CHANCE:HandleRespawn(ply, A_SECOND_CHANCE.CVARS.max_revive_time, A_SECOND_CHANCE.CVARS.need_corpse, true)
 
   if not A_SECOND_CHANCE.CVARS.allow_key_respawn then return end
+
   timer.Simple(A_SECOND_CHANCE.CVARS.min_revive_time, function()
     if not IsValid(ply) then return end
     net.Start("ttt_asc_show_reason")
@@ -95,7 +97,7 @@ end)
 
 
 net.Receive("ttt_asc_key_respawn", function(len, ply)
-  if not IsValid(ply) or ply:IsTerror() then return end
+  if not IsValid(ply) or ply:IsTerror() or not ply:TTT2NETGetBool("ttt_asc_respawning_allowkey", false) then return end
   local respawnAtCorpse = net.ReadBool()
 
   A_SECOND_CHANCE:CancelRevivalProcess(ply)
