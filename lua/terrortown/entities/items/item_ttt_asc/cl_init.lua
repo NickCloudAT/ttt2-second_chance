@@ -1,7 +1,12 @@
 if not CLIENT then return end
 
 net.Receive("ttt_asc_chance_change", function()
-  MSTACK:AddColoredImagedMessage(LANG.GetParamTranslation("item_a_second_chance_chance_change", {chance = tostring(LocalPlayer():TTT2NETGetUInt("ttt_asc_chance", 0))}), nil, Material("vgui/ttt/perks/hud_asc_ttt2.png"), "Second Chance")
+  if net.ReadBool() then
+    MSTACK:AddColoredImagedMessage(LANG.GetParamTranslation("item_a_second_chance_chance_change", {chance = tostring(LocalPlayer():TTT2NETGetUInt("ttt_asc_chance", 0))}), nil, Material("vgui/ttt/perks/hud_asc_ttt2.png"), "Second Chance")
+  end
+  if net.ReadBool() then
+    chat.AddText(LANG.GetParamTranslation("item_a_second_chance_chance_change", {chance = tostring(LocalPlayer():TTT2NETGetUInt("ttt_asc_chance", 0))}))
+  end
   chat.PlaySound()
 end)
 
@@ -9,7 +14,7 @@ net.Receive("ttt_asc_show_reason", function()
   local corpseKey = bind.Find("ttt_asc_respawn_corpse") == KEY_NONE and "NONE" or string.upper(input.GetKeyName(bind.Find("ttt_asc_respawn_corpse")))
   local spawnKey = bind.Find("ttt_asc_respawn_spawn") == KEY_NONE and "NONE"or string.upper(input.GetKeyName(bind.Find("ttt_asc_respawn_spawn")))
 
-  LocalPlayer():SetRevivalReason("ttt_asc_revive_keys", {keycorpse = corpseKey, keyspawn = spawnKey})
+  LocalPlayer():SetRevivalReason("item_a_second_chance_revive_keys", {keycorpse = corpseKey, keyspawn = spawnKey})
 end)
 
 bind.Register("ttt_asc_respawn_corpse", function()

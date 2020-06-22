@@ -5,8 +5,10 @@ util.AddNetworkString("ttt_asc_key_respawn")
 util.AddNetworkString("ttt_asc_show_reason")
 
 function A_SECOND_CHANCE:ChanceChanged(ply)
-  if not IsValid(ply) or not A_SECOND_CHANCE.CVARS.show_mstack_message then return end
+  if not IsValid(ply) or not (A_SECOND_CHANCE.CVARS.show_mstack_messages and A_SECOND_CHANCE.CVARS.show_chat_messages) then return end
   net.Start("ttt_asc_chance_change")
+  net.WriteBool(A_SECOND_CHANCE.CVARS.show_mstack_messages)
+  net.WriteBool(A_SECOND_CHANCE.CVARS.show_chat_messages)
   net.Send(ply)
 end
 
@@ -21,11 +23,18 @@ function A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
   if not IsValid(ply) or not ply:HasEquipmentItem("item_ttt_asc") then return end
 
   if not A_SECOND_CHANCE:ShouldRevive(ply) then
-    LANG.Msg(ply, "ttt_asc_no_revive", nil, MSG_MSTACK_PLAIN)
+    if A_SECOND_CHANCE.CVARS.show_mstack_messages then
+      LANG.Msg(ply, "item_a_second_chance_no_revive", nil, MSG_MSTACK_PLAIN)
+    end
+
+    if A_SECOND_CHANCE.CVARS.show_chat_messages then
+      LANG.Msg(ply, "item_a_second_chance_no_revive", nil, MSG_CHAT_PLAIN)
+    end
+
     return
   end
 
-  EPOP:AddMessage({ply}, "ttt_asc_popup_title", "ttt_asc_popup_subtitle", 5, false)
+  EPOP:AddMessage({ply}, "item_a_second_chance_popup_title", "item_a_second_chance_popup_subtitle", 5, false)
 
   A_SECOND_CHANCE:HandleRespawn(ply, A_SECOND_CHANCE.CVARS.max_revive_time, A_SECOND_CHANCE.CVARS.need_corpse, true)
 
