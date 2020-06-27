@@ -65,6 +65,17 @@ function A_SECOND_CHANCE:HandleDeathAttacker(ply, attacker)
   A_SECOND_CHANCE:ChanceChanged(attacker)
 end
 
+function A_SECOND_CHANCE:HandleKillRecord(ply, attacker)
+  if not A_SECOND_CHANCE.CVARS.use_kill_history or not IsValid(attacker) or not attacker:IsPlayer() or ply == attacker or attacker:HasEquipmentItem("item_ttt_asc") or not attacker:IsTerror() or not ply:IsTerror() then return end
+
+  if attacker:IsInTeam(ply) then
+    attacker.asc_wrong_kills = attacker.asc_wrong_kills and attacker.asc_wrong_kills+1 or 1
+    return
+  end
+
+  attacker.asc_right_kills = attacker.asc_right_kills and attacker.asc_right_kills+1 or 1
+end
+
 function A_SECOND_CHANCE:HandleRespawn(ply, delay, needCorpse, respawnAtCorpse)
   local spawnEntity = nil
   local spawnPos = nil
@@ -96,12 +107,15 @@ end
 
 function A_SECOND_CHANCE:ResetPlayer(ply)
   ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", false)
+  ply.asc_right_kills = nil
+  ply.asc_wrong_kills = nil
 end
 
 
 hook.Add("DoPlayerDeath", "TTT_ASC_HANDLE_DEATH", function(ply, attacker)
   A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
   A_SECOND_CHANCE:HandleDeathAttacker(ply, attacker)
+  A_SECOND_CHANCE:HandleKillRecord(ply, attacker)
 end)
 
 
