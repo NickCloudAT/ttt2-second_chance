@@ -2,7 +2,7 @@ CLGAMEMODESUBMENU.base = "base_gamemodesubmenu"
 CLGAMEMODESUBMENU.title = "submenu_addons_asc_title"
 
 function CLGAMEMODESUBMENU:Populate(parent)
-	local form = vgui.CreateTTT2Form(parent, "header_addons_tttc")
+	local form = vgui.CreateTTT2Form(parent, "header_addons_asc")
 
 	form:MakeHelp({
 		label = "help_asc_menu"

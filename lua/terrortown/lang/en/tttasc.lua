@@ -11,6 +11,7 @@ L["item_a_second_chance_popup_subtitle"] = "You will be revived!"
 L["item_a_second_chance_revive_keys"] = "Press {keycorpse} to respawn at your corpse. Press {keyspawn} to respawn at spawn."
 
 L["submenu_addons_asc_title"] = "A Second Chance"
+L["header_addons_asc"] = "Generel Settings"
 L["help_asc_menu"] = "All Settings for A Second Chance by @NickCloudAT"
 
 L["label_asc_need_corpse"] = "Corpse needed for revival?"
