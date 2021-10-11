@@ -81,10 +81,10 @@ function A_SECOND_CHANCE:HandleRespawn(ply, delay, needCorpse, respawnAtCorpse)
   local spawnPos = nil
   local spawnEyeAngle = nil
   if not respawnAtCorpse then
-    spawnEntity = spawn.GetRandomPlayerSpawnEntity(ply)
+    spawnPoint = plyspawn.GetRandomSafePlayerSpawnPoint(ply)
 
-    spawnPos = spawnEntity:GetPos()
-    spawnEyeAngle = spawnEntity:EyeAngles()
+    spawnPos = spawnPoint.pos
+    spawnEyeAngle = spawnPoint.ang
   end
 
   ply:Revive(delay,
