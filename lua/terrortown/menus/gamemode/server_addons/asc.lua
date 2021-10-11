@@ -100,4 +100,12 @@ function CLGAMEMODESUBMENU:Populate(parent)
 		max = 100,
 		decimal = 0
 	})
+
+	form:MakeSlider({
+		label = "label_asc_health_multiplier",
+		serverConvar = "ttt_asc_revive_health_multiplier",
+		min = 0.01,
+		max = 2,
+		decimal = 2
+	})
 end

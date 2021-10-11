@@ -5,10 +5,10 @@ util.AddNetworkString("ttt_asc_key_respawn")
 util.AddNetworkString("ttt_asc_show_reason")
 
 function A_SECOND_CHANCE:ChanceChanged(ply)
-  if not IsValid(ply) or not (A_SECOND_CHANCE.CVARS.show_mstack_messages and A_SECOND_CHANCE.CVARS.show_chat_messages) then return end
+  if not IsValid(ply) or not (self.CVARS.show_mstack_messages and self.CVARS.show_chat_messages) then return end
   net.Start("ttt_asc_chance_change")
-  net.WriteBool(A_SECOND_CHANCE.CVARS.show_mstack_messages)
-  net.WriteBool(A_SECOND_CHANCE.CVARS.show_chat_messages)
+  net.WriteBool(self.CVARS.show_mstack_messages)
+  net.WriteBool(self.CVARS.show_chat_messages)
   net.Send(ply)
 end
 
@@ -22,12 +22,12 @@ end
 function A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
   if not IsValid(ply) or not ply:HasEquipmentItem("item_ttt_asc") then return end
 
-  if not A_SECOND_CHANCE:ShouldRevive(ply) then
-    if A_SECOND_CHANCE.CVARS.show_mstack_messages then
+  if not self:ShouldRevive(ply) then
+    if self.CVARS.show_mstack_messages then
       LANG.Msg(ply, "item_a_second_chance_no_revive", nil, MSG_MSTACK_PLAIN)
     end
 
-    if A_SECOND_CHANCE.CVARS.show_chat_messages then
+    if self.CVARS.show_chat_messages then
       LANG.Msg(ply, "item_a_second_chance_no_revive", nil, MSG_CHAT_PLAIN)
     end
 
@@ -36,11 +36,11 @@ function A_SECOND_CHANCE:HandleDeathVictim(ply, attacker)
 
   EPOP:AddMessage({ply}, "item_a_second_chance_popup_title", "item_a_second_chance_popup_subtitle", 5, false)
 
-  A_SECOND_CHANCE:HandleRespawn(ply, A_SECOND_CHANCE.CVARS.max_revive_time, A_SECOND_CHANCE.CVARS.need_corpse, true)
+  self:HandleRespawn(ply, self.CVARS.max_revive_time, self.CVARS.need_corpse, true)
 
-  if not A_SECOND_CHANCE.CVARS.allow_key_respawn then return end
+  if not self.CVARS.allow_key_respawn then return end
 
-  timer.Simple(A_SECOND_CHANCE.CVARS.min_revive_time, function()
+  timer.Simple(self.CVARS.min_revive_time, function()
     if not IsValid(ply) then return end
     net.Start("ttt_asc_show_reason")
     net.Send(ply)
@@ -55,18 +55,18 @@ function A_SECOND_CHANCE:HandleDeathAttacker(ply, attacker)
   local new_chance
 
   if attacker:IsInTeam(ply) then
-    new_chance = math.max(1, cur_chance-math.random(A_SECOND_CHANCE.CVARS.min_lose_pct, A_SECOND_CHANCE.CVARS.max_lose_pct))
+    new_chance = math.max(1, cur_chance-math.random(self.CVARS.min_lose_pct, self.CVARS.max_lose_pct))
   else
-    new_chance = math.min(99, cur_chance+math.random(A_SECOND_CHANCE.CVARS.min_gain_pct, A_SECOND_CHANCE.CVARS.max_gain_pct))
+    new_chance = math.min(99, cur_chance+math.random(self.CVARS.min_gain_pct, self.CVARS.max_gain_pct))
   end
 
   attacker:TTT2NETSetUInt("ttt_asc_chance", new_chance, 8)
 
-  A_SECOND_CHANCE:ChanceChanged(attacker)
+  self:ChanceChanged(attacker)
 end
 
 function A_SECOND_CHANCE:HandleKillRecord(ply, attacker)
-  if not A_SECOND_CHANCE.CVARS.use_kill_history or not IsValid(attacker) or not attacker:IsPlayer() or ply == attacker or attacker:HasEquipmentItem("item_ttt_asc") or not attacker:IsTerror() or not ply:IsTerror() then return end
+  if not self.CVARS.use_kill_history or not IsValid(attacker) or not attacker:IsPlayer() or ply == attacker or attacker:HasEquipmentItem("item_ttt_asc") or not attacker:IsTerror() or not ply:IsTerror() then return end
 
   if attacker:IsInTeam(ply) then
     attacker.asc_wrong_kills = attacker.asc_wrong_kills and attacker.asc_wrong_kills+1 or 1
@@ -88,7 +88,7 @@ function A_SECOND_CHANCE:HandleRespawn(ply, delay, needCorpse, respawnAtCorpse)
   end
 
   ply:Revive(delay,
-    function(ply) ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", false) end,
+    self:OnRevive(ply),
     function(ply)
       return IsValid(ply) and not ply:Alive()
     end,
@@ -98,6 +98,19 @@ function A_SECOND_CHANCE:HandleRespawn(ply, delay, needCorpse, respawnAtCorpse)
     spawnPos,
     spawnEyeAngle
     )
+end
+
+function A_SECOND_CHANCE:OnRevive(ply)
+	ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", false)
+
+	if self.CVARS.revive_health_pct == 1 then return end
+
+	timer.Simple(0.05, function()
+		local maxHealth = ply:GetMaxHealth()
+		local newHealth = math.Round(math.max(1, maxHealth*self.CVARS.revive_health_pct), 0)
+
+		ply:SetHealth(newHealth)
+	end)
 end
 
 function A_SECOND_CHANCE:CancelRevivalProcess(ply)

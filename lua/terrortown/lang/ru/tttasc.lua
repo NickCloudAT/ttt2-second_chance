@@ -26,3 +26,4 @@ L["item_a_second_chance_revive_keys"] = "Нажмите {keycorpse}, чтобы 
 --L["label_asc_gain_pct_min"] = "Min percentage you may receive on a correct kill"
 --L["label_asc_lose_pct_max"] = "Max percentage you may lose on a wrong kill"
 --L["label_asc_lose_pct_min"] = "Max percentage you may lose on a wrong kill"
+--L["label_asc_health_multiplier"] = "Health multiplier on respawn"
