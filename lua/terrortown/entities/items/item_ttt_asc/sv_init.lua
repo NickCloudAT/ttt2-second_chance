@@ -93,7 +93,7 @@ function A_SECOND_CHANCE:HandleRespawn(ply, delay, needCorpse, respawnAtCorpse)
       return IsValid(ply) and not ply:Alive()
     end,
     needCorpse,
-    true,
+    REVIVAL_BLOCK_ALL,
     function(ply, failMessage) ply:TTT2NETSetBool("ttt_asc_respawning_allowkey", false) LANG.Msg(ply, failMessage, nil, MSG_MSTACK_WARN) end,
     spawnPos,
     spawnEyeAngle
