@@ -1,4 +1,4 @@
-L = LANG.GetLanguageTableReference("english")
+L = LANG.GetLanguageTableReference("en")
 
 L["item_a_second_chance"] = "Second Chance"
 L["item_a_second_chance_desc"] = "Gain a second chance by killing other people.. Worth it? HELL YEAH!"
